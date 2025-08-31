@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Agent Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/feather-icons@4.29.0/dist/feather.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <i data-feather="cpu" class="me-2"></i>
+                AI Agent Dashboard
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#overview" data-tab="overview">
+                            <i data-feather="home" class="me-1"></i>Overview
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#commands" data-tab="commands">
+                            <i data-feather="terminal" class="me-1"></i>Commands
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#tasks" data-tab="tasks">
+                            <i data-feather="list" class="me-1"></i>Tasks
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#learning" data-tab="learning">
+                            <i data-feather="brain" class="me-1"></i>Learning
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#system" data-tab="system">
+                            <i data-feather="monitor" class="me-1"></i>System
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#settings" data-tab="settings">
+                            <i data-feather="settings" class="me-1"></i>Settings
+                        </a>
+                    </li>
+                </ul>
+                
+                <div class="navbar-nav">
+                    <div class="nav-item">
+                        <span class="navbar-text me-3">
+                            Status: <span id="connectionStatus" class="badge bg-secondary">Connecting...</span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container-fluid main-content">
+        <div class="row">
+            <!-- Overview Tab -->
+            <div id="overview" class="tab-content active">
+                <div class="col-12">
+                    <h2 class="mb-4">AI Agent Overview</h2>
+                    
+                    <!-- Status Cards -->
+                    <div class="row mb-4">
+                        <div class="col-md-3">
+                            <div class="card status-card">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                            <h5 class="card-title text-muted">Agent Status</h5>
+                                            <h3 id="agentStatus" class="text-success">Active</h3>
+                                        </div>
+                                        <div class="status-icon">
+                                            <i data-feather="activity" class="text-success"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-3">
+                            <div class="card status-card">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                            <h5 class="card-title text-muted">Current Model</h5>
+                                            <h3 id="currentModel">Loading...</h3>
+                                        </div>
+                                        <div class="status-icon">
+                                            <i data-feather="cpu" class="text-primary"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-3">
+                            <div class="card status-card">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                            <h5 class="card-title text-muted">Active Tasks</h5>
+                                            <h3 id="activeTasks">0</h3>
+                                        </div>
+                                        <div class="status-icon">
+                                            <i data-feather="list" class="text-warning"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-3">
+                            <div class="card status-card">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                            <h5 class="card-title text-muted">Memory Usage</h5>
+                                            <h3 id="memoryUsage">0 MB</h3>
+                                        </div>
+                                        <div class="status-icon">
+                                            <i data-feather="database" class="text-info"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Quick Actions -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0">Quick Actions</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="btn-group me-2" role="group">
+                                        <button type="button" class="btn btn-primary" onclick="showCommandInterface()">
+                                            <i data-feather="terminal" class="me-1"></i>Open Command Interface
+                                        </button>
+                                        <button type="button" class="btn btn-success" onclick="scheduleTask()">
+                                            <i data-feather="plus" class="me-1"></i>Schedule Task
+                                        </button>
+                                        <button type="button" class="btn btn-info" onclick="generateContent()">
+                                            <i data-feather="edit" class="me-1"></i>Generate Content
+                                        </button>
+                                    </div>
+                                    <div class="btn-group" role="group">
+                                        <button type="button" class="btn btn-warning" onclick="systemScan()">
+                                            <i data-feather="search" class="me-1"></i>System Scan
+                                        </button>
+                                        <button type="button" class="btn btn-secondary" onclick="exportData()">
+                                            <i data-feather="download" class="me-1"></i>Export Data
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Recent Activity -->
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0">Recent Activity</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div id="recentActivity" class="activity-list">
+                                        <div class="text-center text-muted">
+                                            <i data-feather="clock" class="mb-2"></i>
+                                            <p>Loading recent activity...</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0">System Health</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div id="systemHealth">
+                                        <div class="health-metric">
+                                            <span class="metric-label">CPU Usage</span>
+                                            <div class="progress">
+                                                <div id="cpuProgress" class="progress-bar" role="progressbar" style="width: 0%"></div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="health-metric">
+                                            <span class="metric-label">Memory Usage</span>
+                                            <div class="progress">
+                                                <div id="memoryProgress" class="progress-bar" role="progressbar" style="width: 0%"></div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="health-metric">
+                                            <span class="metric-label">Disk Usage</span>
+                                            <div class="progress">
+                                                <div id="diskProgress" class="progress-bar" role="progressbar" style="width: 0%"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Commands Tab -->
+            <div id="commands" class="tab-content">
+                <div class="col-12">
+                    <h2 class="mb-4">Command Interface</h2>
+                    
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0">AI Command Interface</h5>
+                                </div>
+                                <div class="card-body">
+                                    <form id="commandForm">
+                                        <div class="mb-3">
+                                            <label for="commandInput" class="form-label">Enter Command</label>
+                                            <textarea class="form-control" id="commandInput" rows="3" 
+                                                placeholder="Tell me what you'd like me to do..." required></textarea>
+                                        </div>
+                                        <div class="row mb-3">
+                                            <div class="col-md-6">
+                                                <label for="prioritySelect" class="form-label">Priority</label>
+                                                <select class="form-select" id="prioritySelect">
+                                                    <option value="normal">Normal</option>
+                                                    <option value="high">High</option>
+                                                    <option value="urgent">Urgent</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label for="categorySelect" class="form-label">Category</label>
+                                                <select class="form-select" id="categorySelect">
+                                                    <option value="general">General</option>
+                                                    <option value="automation">Automation</option>
+                                                    <option value="analysis">Analysis</option>
+                                                    <option value="creation">Content Creation</option>
+                                                    <option value="system">System Control</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary">
+                                            <i data-feather="send" class="me-1"></i>Execute Command
+                                        </button>
+                                        <button type="button" class="btn btn-secondary ms-2" onclick="clearCommand()">
+                                            <i data-feather="x" class="me-1"></i>Clear
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                            
+                            <!-- Command Results -->
+                            <div class="card mt-4">
+                                <div class="card-header">
+                                    <h5 class="mb-0">Command Results</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div id="commandResults" class="command-results">
+                                        <div class="text-center text-muted">
+                                            <i data-feather="terminal" class="mb-2"></i>
+                                            <p>Command results will appear here</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <!-- Command History -->
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0">Command History</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div id="commandHistory" class="command-history">
+                                        <div class="text-center text-muted">
+                                            <i data-feather="history" class="mb-2"></i>
+                                            <p>No commands executed yet</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Quick Commands -->
+                            <div class="card mt-4">
+                                <div class="card-header">
+                                    <h5 class="mb-0">Quick Commands</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="d-grid gap-2">
+                                        <button class="btn btn-outline-primary btn-sm" onclick="executeQuickCommand('system status')">
+                                            System Status
+                                        </button>
+                                        <button class="btn btn-outline-primary btn-sm" onclick="executeQuickCommand('list files in downloads')">
+                                            List Downloads
+                                        </button>
+                                        <button class="btn btn-outline-primary btn-sm" onclick="executeQuickCommand('take screenshot')">
+                                            Take Screenshot
+                                        </button>
+                                        <button class="btn btn-outline-primary btn-sm" onclick="executeQuickCommand('organize desktop')">
+                                            Organize Desktop
+                                        </button>
+                                        <button class="btn btn-outline-primary btn-sm" onclick="executeQuickCommand('backup important files')">
+                                            Backup Files
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tasks Tab -->
+            <div id="tasks" class="tab-content">
+                <div class="col-12">
+                    <h2 class="mb-4">Task Management</h2>
+                    
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0">Active Tasks</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div id="activeTasksList" class="task-list">
+                                        <div class="text-center text-muted">
+                                            <i data-feather="clock" class="mb-2"></i>
+                                            <p>No active tasks</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0">Scheduled Tasks</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div id="scheduledTasksList" class="task-list">
+                                        <div class="text-center text-muted">
+                                            <i data-feather="calendar" class="mb-2"></i>
+                                            <p>No scheduled tasks</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Task Statistics -->
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0">Task Statistics</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div id="taskStatistics" class="row">
+                                        <div class="col-md-3 text-center">
+                                            <h4 id="totalTasks" class="text-primary">0</h4>
+                                            <p class="text-muted">Total Tasks</p>
+                                        </div>
+                                        <div class="col-md-3 text-center">
+                                            <h4 id="completedTasks" class="text-success">0</h4>
+                                            <p class="text-muted">Completed</p>
+                                        </div>
+                                        <div class="col-md-3 text-center">
+                                            <h4 id="failedTasks" class="text-danger">0</h4>
+                                            <p class="text-muted">Failed</p>
+                                        </div>
+                                        <div class="col-md-3 text-center">
+                                            <h4 id="successRate" class="text-info">0%</h4>
+                                            <p class="text-muted">Success Rate</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Learning Tab -->
+            <div id="learning" class="tab-content">
+                <div class="col-12">
+                    <h2 class="mb-4">Learning System</h2>
+                    
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0">Learning Statistics</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div id="learningStats">
+                                        <div class="row">
+                                            <div class="col-6 text-center">
+                                                <h4 id="totalInteractions" class="text-primary">0</h4>
+                                                <p class="text-muted">Interactions</p>
+                                            </div>
+                                            <div class="col-6 text-center">
+                                                <h4 id="patternsDiscovered" class="text-success">0</h4>
+                                                <p class="text-muted">Patterns</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0">User Preferences</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div id="userPreferences">
+                                        <div class="text-center text-muted">
+                                            <i data-feather="user" class="mb-2"></i>
+                                            <p>Learning user preferences...</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Memory Summary -->
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0">Memory Summary</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div id="memorySummary">
+                                        <div class="text-center text-muted">
+                                            <i data-feather="database" class="mb-2"></i>
+                                            <p>Loading memory information...</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- System Tab -->
+            <div id="system" class="tab-content">
+                <div class="col-12">
+                    <h2 class="mb-4">System Monitoring</h2>
+                    
+                    <div class="row mb-4">
+                        <div class="col-md-4">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0">System Information</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div id="systemInfo">
+                                        <div class="text-center text-muted">
+                                            <i data-feather="info" class="mb-2"></i>
+                                            <p>Loading system information...</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-8">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0">Performance Metrics</h5>
+                                </div>
+                                <div class="card-body">
+                                    <canvas id="performanceChart" width="400" height="200"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Logs -->
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0">System Logs</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div id="systemLogs" class="logs-container">
+                                        <div class="text-center text-muted">
+                                            <i data-feather="file-text" class="mb-2"></i>
+                                            <p>Loading system logs...</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Settings Tab -->
+            <div id="settings" class="tab-content">
+                <div class="col-12">
+                    <h2 class="mb-4">Settings</h2>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0">AI Model Settings</h5>
+                                </div>
+                                <div class="card-body">
+                                    <form id="modelSettings">
+                                        <div class="mb-3">
+                                            <label for="modelSelect" class="form-label">Primary Model</label>
+                                            <select class="form-select" id="modelSelect">
+                                                <option value="gemini">Gemini (Online)</option>
+                                                <option value="ollama">Ollama (Local)</option>
+                                                <option value="lm_studio">LM Studio (Local)</option>
+                                            </select>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="temperatureSlider" class="form-label">Temperature</label>
+                                            <input type="range" class="form-range" id="temperatureSlider" 
+                                                min="0" max="2" step="0.1" value="0.7">
+                                            <div class="d-flex justify-content-between">
+                                                <small>Conservative</small>
+                                                <small>Creative</small>
+                                            </div>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary">Save Model Settings</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0">System Settings</h5>
+                                </div>
+                                <div class="card-body">
+                                    <form id="systemSettings">
+                                        <div class="mb-3">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="autoUpdateCheck">
+                                                <label class="form-check-label" for="autoUpdateCheck">
+                                                    Enable automatic updates
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="voiceEnabledCheck">
+                                                <label class="form-check-label" for="voiceEnabledCheck">
+                                                    Enable voice interaction
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="learningEnabledCheck" checked>
+                                                <label class="form-check-label" for="learningEnabledCheck">
+                                                    Enable learning system
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="logLevelSelect" class="form-label">Log Level</label>
+                                            <select class="form-select" id="logLevelSelect">
+                                                <option value="DEBUG">Debug</option>
+                                                <option value="INFO" selected>Info</option>
+                                                <option value="WARNING">Warning</option>
+                                                <option value="ERROR">Error</option>
+                                            </select>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary">Save System Settings</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <!-- Command Result Modal -->
+    <div class="modal fade" id="commandResultModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Command Execution Result</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="commandResultContent"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Modal -->
+    <div class="modal fade" id="loadingModal" tabindex="-1" data-bs-backdrop="static">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-body text-center">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p class="mt-2">Processing command...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons@4.29.0/dist/feather.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/socket.io-client@4.7.2/dist/socket.io.min.js"></script>
+    <script src="/static/app.js"></script>
+    
+    <script>
+        // Initialize feather icons
+        feather.replace();
+        
+        // Initialize the app when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeApp();
+        });
+    </script>
+</body>
+</html>
