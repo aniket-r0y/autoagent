@@ -1,0 +1,31 @@
+modules = ["python-3.11"]
+[agent]
+expertMode = true
+
+[nix]
+channel = "stable-25_05"
+packages = ["cargo", "espeak-ng", "freetype", "geckodriver", "glibcLocales", "lcms2", "libGL", "libGLU", "libiconv", "libimagequant", "libjpeg", "libsndfile", "libtiff", "libwebp", "libxcrypt", "openjpeg", "openssl", "pkg-config", "portaudio", "rustc", "scrot", "tcl", "tesseract", "tk", "xvfb-run", "zlib"]
+
+[workflows]
+runButton = "Project"
+
+[[workflows.workflow]]
+name = "Project"
+mode = "parallel"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "AI Agent Server"
+
+[[workflows.workflow]]
+name = "AI Agent Server"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "pip install flask flask-socketio psutil pyautogui opencv-python pillow pytesseract pyttsx3 speech_recognition aiohttp cryptography numpy pandas scikit-learn joblib asyncio requests python-multipart && python main.py"
+waitForPort = 5000
+
+[workflows.workflow.metadata]
+outputType = "webview"
